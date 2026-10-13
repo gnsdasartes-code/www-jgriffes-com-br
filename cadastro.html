@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Criar uma conta | J Griffes</title>
+  <link rel="stylesheet" href="css/jgriffes-account.css">
+  <script src="js/jgriffes-account.js" defer></script>
+</head>
+<body>
+  <div class="announcement">ENVIO NACIONAL PARA VOCÊ COMPRAR SEM SAIR DE CASA</div>
+  <header>
+    <a class="back" href="index.html">← Voltar à loja</a>
+    <a class="logo" href="index.html" aria-label="J Griffes — início"><img src="images/logo-j-griffes.jpg" alt="J Griffes Moda Masculina" width="180" height="180"></a>
+    <a class="account" href="cadastro.html?modo=login">Minha conta</a>
+  </header>
+  <nav aria-label="Navegação principal"><a href="index.html">INÍCIO</a><a href="index.html#produtos">PRODUTOS</a><a href="https://wa.me/5511925476299">CONTATO</a></nav>
+  <main>
+    <div class="breadcrumb"><a href="index.html">Início</a> <span aria-hidden="true">›</span> Minha conta <span aria-hidden="true">›</span> <span id="breadcrumb-current">Cadastro</span></div>
+    <h1 id="page-title">Criar uma conta</h1>
+    <p class="intro" id="page-intro">Bem-vindo à J Griffes. Preencha seus dados para se cadastrar.</p>
+    <form id="account-form">
+      <div data-register><label for="name">Nome completo</label><input id="name" name="name" autocomplete="name" placeholder="Seu nome completo" required maxlength="120"></div>
+      <div><label for="email">E-mail</label><input id="email" name="email" type="email" autocomplete="email" placeholder="ex.: seuemail@email.com.br" required maxlength="254"></div>
+      <div data-register><label for="phone">Celular / WhatsApp <span class="optional">(opcional)</span></label><input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="(11) 99999-9999" maxlength="20"></div>
+      <div><label for="password">Senha</label><div class="password-field"><input id="password" name="password" type="password" autocomplete="new-password" placeholder="No mínimo 8 caracteres" minlength="8" required><button type="button" class="reveal" aria-label="Mostrar senha" aria-controls="password" aria-pressed="false">Mostrar</button></div></div>
+      <div data-register><label for="confirm">Confirmar senha</label><div class="password-field"><input id="confirm" name="confirm" type="password" autocomplete="new-password" placeholder="Digite a senha novamente" minlength="8" required><button type="button" class="reveal" aria-label="Mostrar confirmação de senha" aria-controls="confirm" aria-pressed="false">Mostrar</button></div></div>
+      <p class="integration-note">O cadastro e o login estarão disponíveis após a integração do sistema de contas da loja.</p>
+      <button class="submit" type="submit" id="submit-label">CRIAR CONTA</button>
+      <p class="status" id="form-status" role="status" aria-live="polite"></p>
+      <p class="switch" id="mode-switch">Já possui uma conta? <a href="cadastro.html?modo=login">Iniciar sessão</a></p>
+    </form>
+  </main>
+  <footer>J Griffes · Loja Online <a href="https://www.instagram.com/J__griffes/" target="_blank" rel="noopener noreferrer">@J__griffes</a></footer>
+</body>
+</html>

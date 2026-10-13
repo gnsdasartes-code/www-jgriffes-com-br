@@ -1,0 +1,7 @@
+.jg-header-identity { display:flex; align-items:center; justify-content:center; gap:26px; }
+.jg-header-brands { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px 22px; width:320px; padding:12px 0; align-items:center; border:0; background:transparent; }
+.jg-header-brands img { display:block; width:100%; height:58px; object-fit:contain; filter:url(#jg-brand-white-transparent); opacity:1; background:transparent; border:0; box-shadow:none; transition:transform .25s; }
+.jg-header-brands img:hover { transform:translateY(-2px); }
+@media (min-width:768px) and (max-width:1200px) { .jg-header-identity { gap:18px; } .jg-header-brands { width:240px; gap:16px 14px; } .jg-header-brands img { height:46px; } .jg-header-identity #logo img { max-width:160px; } }
+@media (max-width:767px) { .jg-header-identity { flex-direction:column; gap:0; } .jg-header-brands { width:min(300px,100%); padding:10px 0 18px; gap:12px 14px; } .jg-header-brands img { height:36px; } }
+@media (prefers-reduced-motion:reduce) { .jg-header-brands img { transition:none; } }
