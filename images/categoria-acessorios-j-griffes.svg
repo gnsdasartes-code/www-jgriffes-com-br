@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240" role="img" aria-label="Óculos de sol">
+  <defs>
+    <linearGradient id="lens" x2=".8" y2="1"><stop stop-color="#41464d"/><stop offset=".5" stop-color="#101216"/><stop offset="1" stop-color="#030405"/></linearGradient>
+    <linearGradient id="metal" x2="0" y2="1"><stop stop-color="#f4f4f4"/><stop offset=".45" stop-color="#777"/><stop offset="1" stop-color="#ddd"/></linearGradient>
+  </defs>
+  <circle cx="120" cy="120" r="120" fill="#e53935"/>
+  <ellipse cx="120" cy="160" rx="82" ry="9" fill="#000" opacity=".18"/>
+  <path d="M35 112 48 84 83 79M204 112 193 84 159 79" fill="none" stroke="#171719" stroke-width="9" stroke-linejoin="round"/>
+  <path d="M29 109Q68 97 102 110L98 139Q95 156 66 155Q42 154 37 139Z M138 110Q173 97 211 109L203 139Q198 154 174 155Q145 156 142 139Z" fill="url(#lens)" stroke="#141416" stroke-width="8"/>
+  <path d="M102 116Q120 103 138 116" fill="none" stroke="url(#metal)" stroke-width="6"/>
+  <path d="M45 116 87 110M151 113 192 110" stroke="#fff" opacity=".5" stroke-width="3" stroke-linecap="round"/>
+  <path d="m47 124 16-3m90 4 18-4" stroke="#fff" opacity=".15" stroke-width="5" stroke-linecap="round"/>
+  <path d="M28 110h12m161 0h12" stroke="url(#metal)" stroke-width="4"/>
+</svg>

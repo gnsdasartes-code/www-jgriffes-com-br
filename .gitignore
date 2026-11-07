@@ -1,0 +1,5 @@
+/storage/*
+!/storage/.htaccess
+/uploads/*
+!/uploads/.htaccess
+/.runtime/

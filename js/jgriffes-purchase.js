@@ -26,7 +26,7 @@
   const quantity = find('input');
   let product, selections = [], previousFocus, previousOverflow;
   const normalizeQuantity = () => {
-    quantity.value = Math.max(1, Math.min(99, Math.floor(Number(quantity.value) || 1)));
+    quantity.value = Math.max(1, Math.min(Number(quantity.max) || 99, Math.floor(Number(quantity.value) || 1)));
   };
   function updateOrder() {
     normalizeQuantity();
@@ -36,6 +36,7 @@
     find('.jg-purchase-buy').href = `https://wa.me/5511925476299?text=${encodeURIComponent(message)}`;
   }
   function openProduct(card, trigger) {
+    if (card.dataset.catalogStock !== undefined && Number(card.dataset.catalogStock) < 1) return;
     const image = card.querySelector('.product-item-image-featured, .js-product-item-image-link-private img, .item-image img');
     const link = card.querySelector('.item-link');
     product = {
@@ -51,6 +52,7 @@
     const localImage = src => {
       if (!src || src.startsWith('data:')) return null;
       const url = new URL(src, document.baseURI);
+      if (url.origin === location.origin && url.pathname.includes('/uploads/')) return url.href;
       const filename = url.pathname.split('/').pop();
       return new URL(`images/${filename}`, new URL('.', document.baseURI)).href;
     };
@@ -67,6 +69,7 @@
     find('.jg-purchase-price').textContent = product.price;
     find('.jg-purchase-compare').textContent = product.compare;
     find('.jg-purchase-compare').hidden = !product.compare || product.compare === product.price;
+    quantity.max = card.dataset.catalogStock || 99;
     quantity.value = 1;
     selections = [];
     const options = find('.jg-purchase-options');
@@ -116,6 +119,7 @@
     if (!card) return;
     event.preventDefault();
     event.stopImmediatePropagation();
+    if (card.closest('[data-catalog-category]')?.swiper?.allowClick === false) return;
     openProduct(card, trigger);
   }, true);
   document.addEventListener('submit', event => {

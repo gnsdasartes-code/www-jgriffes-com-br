@@ -1,0 +1,44 @@
+/* Product cards follow the original storefront; data comes from the admin API. */
+.jg-catalog-container:has(:is(#jg-catalog-grid,#jg-catalog-pants)){overflow:visible!important}
+.js-products-featured-grid:has(:is(#jg-catalog-grid,#jg-catalog-pants)){display:block!important;width:100%!important;transform:none!important}
+.js-products-featured-grid:has(:is(#jg-catalog-grid,#jg-catalog-pants))>.swiper-slide{display:none!important}
+.js-products-featured-grid:has(:is(#jg-catalog-grid,#jg-catalog-pants))>.swiper-slide:has(:is(#jg-catalog-grid,#jg-catalog-pants)){display:block!important;width:100%!important;margin:0!important}
+.js-products-featured-container:has(:is(#jg-catalog-grid,#jg-catalog-pants)) .swiper-button-prev,.js-products-featured-container:has(:is(#jg-catalog-grid,#jg-catalog-pants)) .swiper-button-next,.js-products-featured-container:has(:is(#jg-catalog-grid,#jg-catalog-pants)) .swiper-pagination{display:none!important}
+.jg-catalog-pager{position:relative;width:100%;min-width:0}
+:is(#jg-catalog-grid,#jg-catalog-pants){display:block!important;width:100%!important;margin:0!important;overflow:hidden;padding:3px;touch-action:pan-y}
+:is(#jg-catalog-grid,#jg-catalog-pants) .jg-catalog-track{align-items:stretch;height:auto!important}
+:is(#jg-catalog-grid,#jg-catalog-pants) .jg-catalog-column{display:grid;grid-template-rows:repeat(2,minmax(0,1fr));row-gap:24px;height:auto;box-sizing:border-box;align-items:stretch}
+:is(#jg-catalog-grid,#jg-catalog-pants)[data-rows="1"] .jg-catalog-column{grid-template-rows:minmax(0,1fr)}
+:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-card{display:flex;flex-direction:column;position:relative;min-width:0;width:auto!important;max-width:none!important;margin:0!important;padding:0!important;overflow:hidden;background:#000;color:#fff;border:1px solid #242424;border-radius:4px;box-shadow:0 0 5px #ffffff20;text-align:left}
+:is(#jg-catalog-grid,#jg-catalog-pants) .item-image{position:relative;display:block;width:100%;height:auto!important;margin:0;padding:0;overflow:hidden}
+:is(#jg-catalog-grid,#jg-catalog-pants) .item-image a{display:block;width:100%;color:inherit}
+:is(#jg-catalog-grid,#jg-catalog-pants) .item-image img{position:static!important;display:block!important;width:100%!important;height:auto!important;max-height:none!important;aspect-ratio:3/4;object-fit:cover;opacity:1!important;margin:0!important;transform:scale(1)!important;transform-origin:center!important;translate:none!important;rotate:none!important;scale:none!important;left:auto!important;right:auto!important;transition:transform .3s ease,opacity .3s ease;-webkit-user-drag:none;user-select:none}
+:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-info{display:flex;flex-direction:column;flex:1;padding:10px;min-width:0}
+:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-name{font-family:inherit;font-size:var(--font-small,14px);font-weight:400;line-height:1.1429}
+:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-name{font-family:inherit;font-size:var(--font-small,14px);font-weight:400;line-height:1.1429;color:rgba(255,255,255,.8);margin:4px 0 12px;min-height:16px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal;letter-spacing:0}
+:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-discount{padding:0;margin:0 0 8px;color:var(--accent-color,#ed3035);font-size:var(--font-smallest,12px);font-weight:700;line-height:14px;text-transform:uppercase}
+:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-prices{display:flex;align-items:baseline;gap:5px;flex-wrap:wrap;font-family:var(--heading-font,inherit)}
+:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-price{font-size:var(--font-big,18px);font-weight:700;line-height:1.3;color:#fff}
+:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-compare{font-size:var(--font-small,14px);font-weight:400;color:#fff;opacity:.5;text-decoration:line-through}
+:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-installments{font-family:var(--heading-font,inherit);font-size:var(--font-smallest,12px);font-weight:400;line-height:1.4;color:#fff;margin-top:4px}
+:is(#jg-catalog-grid,#jg-catalog-pants) .js-stock-label{font-size:12px;color:#ccc;margin:8px 0 0}
+:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-buy{display:flex;align-items:center;justify-content:center;gap:4px;width:75%;min-height:30px;margin:16px 0 0;padding:8px 10px;background:var(--button-background,#eb3035);color:var(--button-foreground,#fff);border:0;border-radius:2px;font-family:inherit;font-size:var(--font-smallest,12px);font-weight:700;line-height:14px;cursor:pointer;letter-spacing:0;text-transform:uppercase;transition:opacity .3s ease}
+:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-buy svg{width:14px;height:14px;flex-shrink:0;fill:currentColor}
+:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-buy:hover:not(:disabled){opacity:.8}
+:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-buy:disabled{opacity:.5;cursor:default}
+:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-buy:focus-visible,:is(#jg-catalog-grid,#jg-catalog-pants) a:focus-visible{outline:2px solid #fff;outline-offset:-3px}
+:is(#jg-catalog-grid,#jg-catalog-pants) .jg-catalog-empty{padding:40px 15px;text-align:center;width:100%}
+.jg-catalog-controls{display:flex;justify-content:center;align-items:center;gap:18px;margin-top:18px;color:#fff}
+.jg-catalog-controls[hidden]{display:none!important}
+.jg-catalog-controls button{display:grid;place-items:center;width:30px;height:40px;padding:0;border:0;background:transparent;color:#fff;cursor:pointer;transition:opacity .3s ease}
+.jg-catalog-controls svg{width:12px;height:24px}
+.jg-catalog-controls button:hover:not(:disabled){opacity:.8}
+.jg-catalog-controls button:disabled{opacity:.25;cursor:default}
+.jg-catalog-controls button:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.jg-catalog-page{display:none}
+@media(hover:hover) and (pointer:fine){:is(#jg-catalog-grid,#jg-catalog-pants) .item-image a:hover img{transform:scale(1.04)!important}}
+:is(#jg-catalog-grid,#jg-catalog-pants) .item-image .jg-product-secondary{position:absolute!important;inset:0!important;opacity:0!important;height:100%!important;pointer-events:none}
+@media(hover:hover) and (pointer:fine){:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-has-secondary:hover .product-item-image-featured{opacity:0!important}:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-has-secondary:hover .jg-product-secondary{opacity:1!important}}
+@media(min-width:1100px){.jg-catalog-controls button{position:absolute;top:var(--jg-arrow-top,200px);transform:translateY(-50%)}.jg-catalog-prev{left:-32px}.jg-catalog-next{right:-32px}}
+@media(max-width:767px){:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-buy{width:100%}:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-name{font-size:13px}:is(#jg-catalog-grid,#jg-catalog-pants) .jg-catalog-column{row-gap:18px}}
+@media(prefers-reduced-motion:reduce){:is(#jg-catalog-grid,#jg-catalog-pants) .item-image img{transition:none!important;transform:none!important}.jg-catalog-controls button,:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-buy{transition:none}}
