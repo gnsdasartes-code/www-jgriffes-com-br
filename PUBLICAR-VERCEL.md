@@ -13,6 +13,7 @@ Para gerar um novo acesso, use `node scripts/create-admin-access.mjs` em uma ins
 No projeto Vercel conectado a este repositório:
 
 1. Em Storage/Marketplace, conecte um banco **Turso/libSQL** e um armazenamento **Vercel Blob público**. Nenhum produto ou imagem depende do disco temporário das funções.
+   Na conexão do Turso, mantenha as ações de criar branch/cópia por deployment desativadas para **Production**. A loja de produção deve usar sempre o banco principal: cópias isoladas por publicação não contêm as alterações feitas no admin de outra cópia. A configuração validada usa `deployments.actions: []` e `deployments.required: false` na conexão do recurso ao projeto. Mantenha backup e confira os produtos antes e depois de alterar essa configuração.
 2. Configure as variáveis de ambiente de **Production**:
 
 | Variável | Origem |
