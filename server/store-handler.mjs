@@ -88,14 +88,16 @@ export function createHandler({sql,initialize,put}){
    if(action==='products'&&method==='DELETE'){
     const body=await json(req);if(typeof body.id!=='string')fail('Produto inválido.');await sql('DELETE FROM products WHERE id=?',[body.id]);return reply({ok:true});
    }
-   if(action==='products'&&method==='POST'){
-    const body=await json(req),fresh=!body.id,productId=body.id||randomBytes(10).toString('hex');
+   if((action==='products'||action==='import-product')&&method==='POST'){
+    const body=await json(req),importing=action==='import-product',fresh=!body.id,productId=body.id||randomBytes(10).toString('hex');
+    if(importing&&!body.id)fail('A importação exige o ID original do produto.');
     if(typeof productId!=='string'||!/^[a-f0-9]{20}$/.test(productId))fail('Produto inválido.');
     const oldResult=await sql('SELECT data FROM products WHERE id=?',[productId]),old=oldResult.rows[0]?JSON.parse(oldResult.rows[0].data):{};
-    if(!fresh&&!old.id)fail('Produto não encontrado.',404);
+    if(importing&&old.id)return reply(old);
+    if(!importing&&!fresh&&!old.id)fail('Produto não encontrado.',404);
     const name=text(body.name??'',200),description=text(body.description??'',10000),category=text(body.category??'Geral',100);
     if(!name||!category)fail('Informe nome e categoria.');
-    const price=money(body.price),stock=integer(fresh&&(!body.stock||body.stock<0)?1:body.stock,1000000),active=fresh?true:body.active;
+    const price=money(body.price),stock=integer(!importing&&fresh&&(!body.stock||body.stock<0)?1:body.stock,1000000),active=!importing&&fresh?true:body.active;
     if(typeof active!=='boolean')fail('Situação inválida.');
     const images=body.images??[];if(!Array.isArray(images)||images.length>10)fail('Limite de 10 imagens.');
     for(const image of images){
@@ -110,7 +112,8 @@ export function createHandler({sql,initialize,put}){
     const installmentValue=installmentCount?money(body.installmentValue??old.installmentValue):null;
     if(installmentCount&&(!installmentValue||installmentValue*installmentCount+0.01<price))fail('Revise o valor das parcelas.');
     const product={id:productId,name,description,category,price,stock,active,images,sizes,comparePrice,installmentCount,installmentValue,originalUrl:old.originalUrl||''};
-    await sql('INSERT INTO products(id,data) VALUES(?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data',[productId,JSON.stringify(product)]);
+    await sql(importing?'INSERT OR IGNORE INTO products(id,data) VALUES(?,?)':'INSERT INTO products(id,data) VALUES(?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data',[productId,JSON.stringify(product)]);
+    if(importing){const saved=await sql('SELECT data FROM products WHERE id=?',[productId]);return reply(JSON.parse(saved.rows[0].data));}
     await sql('INSERT OR IGNORE INTO categories VALUES(?)',[category]);return reply(product);
    }
    fail('Operação não encontrada.',404);

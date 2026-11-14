@@ -75,3 +75,9 @@ test('valida conteúdo do upload e registra a imagem antes de permitir seu uso',
  const uploaded=await f.request('upload',{method:'POST',body:form});assert.equal(uploaded.response.status,200);assert.equal(f.uploads,1);
  const saved=await f.request('products',{method:'POST',data:{...product,images:[uploaded.value.path]}});assert.equal(saved.response.status,200);
 });
+test('importação autenticada mantém IDs, estoque e produtos já editados online',async t=>{
+ const f=await fixture(t),data={...product,id:'1234567890abcdef1234',stock:0,active:false};
+ assert.equal((await f.request('import-product',{method:'POST',data})).response.status,401);
+ await f.login();const first=await f.request('import-product',{method:'POST',data});assert.equal(first.response.status,200);assert.equal(first.value.id,data.id);assert.equal(first.value.stock,0);assert.equal(first.value.active,false);
+ const second=await f.request('import-product',{method:'POST',data:{...data,name:'Não sobrescrever'}});assert.equal(second.value.name,data.name);assert.equal((await f.request('products')).value.length,1);
+});
