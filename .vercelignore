@@ -1,0 +1,10 @@
+.git
+.runtime
+node_modules
+public
+storage
+uploads
+tests
+admin/initial-admin.php
+.env*
+*.zip

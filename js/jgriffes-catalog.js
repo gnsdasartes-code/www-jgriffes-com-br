@@ -45,7 +45,7 @@
  function card(p){
   const el=node('article','js-item-product jg-product-card');
   el.dataset.catalogId=p.id;el.dataset.catalogStock=p.stock;el.dataset.catalogDescription=p.description;el.dataset.catalogImages=JSON.stringify(p.images);
-  const box=node('div','item-image'),link=node('a','item-link js-product-item-image-link-private');link.href='#produto-'+p.id;link.setAttribute('aria-label',p.name);
+  const box=node('div','item-image'),link=node('a','item-link js-product-item-image-link-private');link.href='produto.html?id='+encodeURIComponent(p.id);link.target='_blank';link.rel='noopener noreferrer';link.setAttribute('aria-label','Ver detalhes de '+p.name);
   if(p.images[0]){const img=node('img','product-item-image-featured');img.src=p.images[0];img.alt=p.name;img.loading='lazy';img.style.cssText='width:100%;aspect-ratio:3/4;object-fit:cover';link.append(img);}else{const empty=node('div','','Sem foto');empty.style.cssText='aspect-ratio:3/4;background:#f5f5f5;display:grid;place-items:center';link.append(empty);}
   if(p.images[1]){const secondary=node('img','jg-product-secondary');secondary.src=p.images[1];secondary.alt=p.name;secondary.loading='lazy';link.classList.add('jg-product-has-secondary');link.append(secondary);}
   box.append(link);

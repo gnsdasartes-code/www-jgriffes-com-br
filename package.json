@@ -1,0 +1,23 @@
+{
+  "name": "jgriffes-store",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "build": "node scripts/build-public.mjs",
+    "test": "node --test tests/vercel-api.test.mjs",
+    "test:storefront": "playwright test",
+    "migrate:vercel": "node --env-file=.env.production.local scripts/migrate-vercel.mjs",
+    "credentials:vercel": "node scripts/create-vercel-credentials.mjs"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.0.0",
+    "file-type": "^21.0.0",
+    "image-size": "^2.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1"
+  }
+}

@@ -21,7 +21,7 @@ try {
  $db->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
  $db->exec('PRAGMA busy_timeout=5000; PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS admins(email TEXT PRIMARY KEY,password TEXT NOT NULL); CREATE TABLE IF NOT EXISTS products(id TEXT PRIMARY KEY,data TEXT NOT NULL); CREATE TABLE IF NOT EXISTS categories(name TEXT PRIMARY KEY); CREATE TABLE IF NOT EXISTS attempts(ip TEXT PRIMARY KEY,count INTEGER,started INTEGER); CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY,value TEXT);');
  // Provision once; later password changes must not be overwritten.
- if(!$db->query("SELECT value FROM meta WHERE key='initial_admin_v1'")->fetchColumn()) {
+ if(is_file(dirname(__DIR__).'/admin/initial-admin.php') && !$db->query("SELECT value FROM meta WHERE key='initial_admin_v1'")->fetchColumn()) {
   $initial=require dirname(__DIR__).'/admin/initial-admin.php';
   $db->beginTransaction();
   $db->prepare('INSERT OR IGNORE INTO admins(email,password) VALUES(?,?)')->execute([$initial['email'],$initial['hash']]);

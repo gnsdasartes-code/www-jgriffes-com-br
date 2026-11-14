@@ -42,3 +42,6 @@
 @media(min-width:1100px){.jg-catalog-controls button{position:absolute;top:var(--jg-arrow-top,200px);transform:translateY(-50%)}.jg-catalog-prev{left:-32px}.jg-catalog-next{right:-32px}}
 @media(max-width:767px){:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-buy{width:100%}:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-name{font-size:13px}:is(#jg-catalog-grid,#jg-catalog-pants) .jg-catalog-column{row-gap:18px}}
 @media(prefers-reduced-motion:reduce){:is(#jg-catalog-grid,#jg-catalog-pants) .item-image img{transition:none!important;transform:none!important}.jg-catalog-controls button,:is(#jg-catalog-grid,#jg-catalog-pants) .jg-product-buy{transition:none}}
+.jg-cookie-acknowledged .js-notification-cookie-banner{display:none!important}
+.jg-newsletter-note{font-size:12px;line-height:1.6;color:#bbb}
+.jg-newsletter-no-email{display:none!important}

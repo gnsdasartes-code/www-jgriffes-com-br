@@ -3,3 +3,11 @@
 /uploads/*
 !/uploads/.htaccess
 /.runtime/
+/node_modules/
+/public/
+/.vercel/
+/.env*
+!/.env.example
+/test-results/
+/playwright-report/
+/admin/initial-admin.php

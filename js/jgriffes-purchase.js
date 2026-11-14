@@ -52,6 +52,7 @@
     const localImage = src => {
       if (!src || src.startsWith('data:')) return null;
       const url = new URL(src, document.baseURI);
+      if (url.protocol === 'https:' && url.hostname.endsWith('.public.blob.vercel-storage.com')) return url.href;
       if (url.origin === location.origin && url.pathname.includes('/uploads/')) return url.href;
       const filename = url.pathname.split('/').pop();
       return new URL(`images/${filename}`, new URL('.', document.baseURI)).href;
