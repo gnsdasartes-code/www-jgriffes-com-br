@@ -2,6 +2,8 @@
 
 ## Publicação na Vercel
 
+O acesso direto fica no arquivo privado `.runtime/acesso-direto-admin.html`: abra e clique em **ENTRAR NO ADMIN ONLINE** para gerenciar os produtos sem digitar senha. Após entrar, o navegador lembra o acesso por até 30 dias. Não compartilhe esse arquivo nem o link que ele contém.
+
 Veja [PUBLICAR-VERCEL.md](PUBLICAR-VERCEL.md) para o backend Node, banco Turso, Vercel Blob e transferência dos produtos locais. O build `npm run build` exclui PHP, banco local e credenciais da saída pública. A configuração local abaixo continua usando PHP/SQLite.
 
 ## Servidor local configurado neste computador

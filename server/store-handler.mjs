@@ -35,7 +35,7 @@ export function createHandler({sql,initialize,put}){
   const secure=process.env.VERCEL?' Secure;':'';
   const cookie=(token,age)=>res.setHeader('Set-Cookie',`jg_cloud=${token}; Path=/; HttpOnly;${secure} SameSite=Strict; Max-Age=${age}`);
   try{
-   if(!process.env.ADMIN_EMAIL||!process.env.ADMIN_PASSWORD_HASH||!process.env.SESSION_SECRET||process.env.SESSION_SECRET.length<32)throw new HttpError(503,'Configure o acesso administrativo no servidor.');
+   if(!process.env.ADMIN_EMAIL||(!process.env.ADMIN_PASSWORD_HASH&&!process.env.ADMIN_ACCESS_TOKEN_HASH)||!process.env.SESSION_SECRET||process.env.SESSION_SECRET.length<32)throw new HttpError(503,'Configure o acesso administrativo no servidor.');
    await initialize();const now=Math.floor(Date.now()/1000),url=new URL(req.url,'http://localhost'),action=url.searchParams.get('action')||'products',method=req.method;
    if(method!=='GET'&&req.headers.origin){const origin=new URL(req.headers.origin);if(origin.host!==req.headers.host)fail('Origem não autorizada.',403);}
    let session=null;
@@ -49,18 +49,19 @@ export function createHandler({sql,initialize,put}){
    if(action==='products'&&method==='GET'){
     const result=await sql('SELECT data FROM products ORDER BY rowid DESC');const products=result.rows.map(row=>JSON.parse(row.data));return reply(session?products:products.filter(p=>p.active));
    }
-   if(action==='login'&&method==='POST'){
-    const body=await json(req),email=text(body.email??'',254).toLowerCase();
+   if((action==='login'||action==='access')&&method==='POST'){
+    const body=await json(req),direct=action==='access',email=direct?process.env.ADMIN_EMAIL.toLowerCase():text(body.email??'',254).toLowerCase();
     const ip=String(req.headers['x-real-ip']||req.socket?.remoteAddress||'unknown');const key=sign(ip);
     // Atomic counter limits concurrent requests as well as sequential attempts.
     const rate=await sql('INSERT INTO attempts(ip,count,started) VALUES(?,1,?) ON CONFLICT(ip) DO UPDATE SET count=CASE WHEN started<=? THEN 1 ELSE count+1 END,started=CASE WHEN started<=? THEN excluded.started ELSE started END RETURNING count',[key,now,now-900,now-900]);
     if(Number(rate.rows[0].count)>8)fail('Muitas tentativas. Aguarde 15 minutos.',429);
-    const valid=await verifyPassword(body.password,process.env.ADMIN_PASSWORD_HASH);
-    if(!valid||email!==process.env.ADMIN_EMAIL.toLowerCase())fail('E-mail ou senha inválidos.',401);
+    const valid=direct?typeof body.token==='string'&&/^[a-f0-9]{64}$/.test(body.token)&&equal(digest(body.token),process.env.ADMIN_ACCESS_TOKEN_HASH):await verifyPassword(body.password,process.env.ADMIN_PASSWORD_HASH);
+    if(!valid||email!==process.env.ADMIN_EMAIL.toLowerCase())fail(direct?'Link de acesso inválido. Use seu link privado.':'E-mail ou senha inválidos.',401);
     if(token)await sql('DELETE FROM sessions WHERE id=?',[digest(token[1])]);
-    const sessionToken=id(),csrf=id();await sql('INSERT INTO sessions VALUES(?,?,?,?)',[digest(sessionToken),email,csrf,now+3600]);
+    const age=direct?30*24*3600:3600;
+    const sessionToken=id(),csrf=id();await sql('INSERT INTO sessions VALUES(?,?,?,?)',[digest(sessionToken),email,csrf,now+age]);
     await sql('DELETE FROM attempts WHERE ip=?',[key]);await sql('DELETE FROM sessions WHERE expires<=?',[now]);
-    cookie(`${sessionToken}.${sign(sessionToken)}`,3600);return reply({ok:true});
+    cookie(`${sessionToken}.${sign(sessionToken)}`,age);return reply({ok:true});
    }
    if(!session)fail('Faça login para continuar.',401);
    if(method!=='GET'&&!equal(session.csrf,req.headers['x-csrf-token']))fail('Sessão inválida. Atualize a página.',403);

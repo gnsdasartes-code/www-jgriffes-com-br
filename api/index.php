@@ -6,7 +6,7 @@ header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
 header("Content-Security-Policy: default-src 'none'");
 session_name('jg_admin');
-session_start(['cookie_httponly'=>true,'cookie_secure'=>!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off','cookie_samesite'=>'Strict','use_strict_mode'=>true]);
+session_start(['cookie_httponly'=>true,'cookie_secure'=>!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off','cookie_samesite'=>'Strict','cookie_lifetime'=>2592000,'gc_maxlifetime'=>2592000,'use_strict_mode'=>true]);
 function reply($data, int $status=200): never { http_response_code($status); echo json_encode($data, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES); exit; }
 function body(): array { $v=json_decode(file_get_contents('php://input'),true); if(!is_array($v)) reply(['error'=>'Dados inválidos.'],400); return $v; }
 function textfield($v,int $max): string { if(!is_string($v)||mb_strlen(trim($v))>$max) reply(['error'=>'Texto inválido ou muito longo.'],422); return trim($v); }
@@ -33,15 +33,27 @@ try {
  $action=$_GET['action']??'products'; $method=$_SERVER['REQUEST_METHOD'];
  if($action==='products'&&$method==='GET') { $all=array_map(fn($r)=>json_decode($r['data'],true),$db->query('SELECT data FROM products ORDER BY rowid DESC')->fetchAll(PDO::FETCH_ASSOC)); if(empty($_SESSION['email'])) $all=array_values(array_filter($all,fn($p)=>$p['active'])); reply($all); }
  if($action==='session'&&$method==='GET') { $_SESSION['csrf']??=bin2hex(random_bytes(32)); reply(['email'=>$_SESSION['email']??null,'csrf'=>$_SESSION['csrf']]); }
+ if($action==='access'&&$method==='POST') {
+  $v=body();$path=dirname(__DIR__).'/.runtime/admin-access.json';
+  $access=is_file($path)?json_decode(file_get_contents($path),true):null;
+  $ip=$_SERVER['REMOTE_ADDR']??'unknown';$s=$db->prepare('SELECT * FROM attempts WHERE ip=?');$s->execute([$ip]);$a=$s->fetch(PDO::FETCH_ASSOC);
+  if($a&&$a['started']>time()-900&&$a['count']>=8)reply(['error'=>'Muitas tentativas. Aguarde 15 minutos.'],429);
+  $provided=$v['token']??'';
+  if(!$access||!is_string($provided)||!preg_match('/^[a-f0-9]{64}$/',$provided)||!hash_equals($access['hash'],hash('sha256',$provided))){
+   $count=$a&&$a['started']>time()-900?(int)$a['count']+1:1;$db->prepare('INSERT OR REPLACE INTO attempts VALUES(?,?,?)')->execute([$ip,$count,$count===1?time():$a['started']]);reply(['error'=>'Link de acesso inválido. Use seu link privado.'],401);
+  }
+  $email='gnsdasartes@gmail.com';$s=$db->prepare('SELECT email FROM admins WHERE email=?');$s->execute([$email]);if(!$s->fetchColumn())reply(['error'=>'Administrador não configurado.'],401);
+  session_regenerate_id(true);$_SESSION['email']=$email;$_SESSION['csrf']=bin2hex(random_bytes(32));$_SESSION['last']=time();$_SESSION['max_age']=2592000;$db->prepare('DELETE FROM attempts WHERE ip=?')->execute([$ip]);reply(['ok'=>true]);
+ }
  if($action==='login'&&$method==='POST') {
   $v=body(); $ip=$_SERVER['REMOTE_ADDR']??'unknown'; $s=$db->prepare('SELECT * FROM attempts WHERE ip=?'); $s->execute([$ip]); $a=$s->fetch(PDO::FETCH_ASSOC);
   if($a && $a['started']>time()-900 && $a['count']>=8) reply(['error'=>'Muitas tentativas. Aguarde 15 minutos.'],429);
   $s=$db->prepare('SELECT password FROM admins WHERE email=?'); $s->execute([strtolower(trim($v['email']??''))]); $hash=$s->fetchColumn();
   if(!verify_admin_password($v['password']??'', $hash?:'$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.') || !$hash) { $count=$a&&$a['started']>time()-900?(int)$a['count']+1:1; $s=$db->prepare('INSERT OR REPLACE INTO attempts VALUES(?,?,?)'); $s->execute([$ip,$count,$count===1?time():$a['started']]); reply(['error'=>'E-mail ou senha inválidos.'],401); }
   if(str_starts_with($hash,'pbkdf2_sha256:')) $db->prepare('UPDATE admins SET password=? WHERE email=?')->execute([password_hash($v['password'],PASSWORD_DEFAULT),strtolower(trim($v['email']))]);
-  session_regenerate_id(true); $_SESSION['email']=strtolower(trim($v['email'])); $_SESSION['csrf']=bin2hex(random_bytes(32)); $_SESSION['last']=time(); $db->prepare('DELETE FROM attempts WHERE ip=?')->execute([$ip]); reply(['ok'=>true]);
+  session_regenerate_id(true); $_SESSION['email']=strtolower(trim($v['email'])); $_SESSION['csrf']=bin2hex(random_bytes(32)); $_SESSION['last']=time(); $_SESSION['max_age']=3600; $db->prepare('DELETE FROM attempts WHERE ip=?')->execute([$ip]); reply(['ok'=>true]);
  }
- if(empty($_SESSION['email']) || ($_SESSION['last']??0)<time()-3600) { unset($_SESSION['email']); reply(['error'=>'Faça login para continuar.'],401); }
+ if(empty($_SESSION['email']) || ($_SESSION['last']??0)<time()-($_SESSION['max_age']??3600)) { unset($_SESSION['email']); reply(['error'=>'Faça login para continuar.'],401); }
  $_SESSION['last']=time();
  if($method!=='GET' && !hash_equals($_SESSION['csrf']??'',$_SERVER['HTTP_X_CSRF_TOKEN']??'')) reply(['error'=>'Sessão inválida. Atualize a página.'],403);
  if($action==='logout'&&$method==='POST') { $_SESSION=[]; session_destroy(); reply(['ok'=>true]); }

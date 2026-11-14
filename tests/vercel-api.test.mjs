@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { DatabaseSync } from 'node:sqlite';
-import { pbkdf2Sync } from 'node:crypto';
+import { pbkdf2Sync,createHash } from 'node:crypto';
 import { createHandler } from '../server/store-handler.mjs';
 
 const password='integration-test-only-password',salt=Buffer.alloc(32,7);
@@ -24,7 +24,7 @@ async function fixture(t){
   const r=await fetch(base+action,{method,headers:{...(auth?{Cookie:cookie,'X-CSRF-Token':csrf}:{}),...(data?{'Content-Type':'application/json'}:{}),...headers},body:data?JSON.stringify(data):body});
   return {response:r,value:await r.json()};
  };
- async function login(){const result=await request('login',{method:'POST',data:{email:'admin@example.test',password}});assert.equal(result.response.status,200);cookie=result.response.headers.get('set-cookie').split(';')[0];assert.match(result.response.headers.get('set-cookie'),/HttpOnly/);csrf=(await request('session')).value.csrf;}
+ async function login(token){const result=await request(token?'access':'login',{method:'POST',data:token?{token}:{email:'admin@example.test',password}});assert.equal(result.response.status,200);cookie=result.response.headers.get('set-cookie').split(';')[0];assert.match(result.response.headers.get('set-cookie'),/HttpOnly/);csrf=(await request('session')).value.csrf;return result;}
  return {request,login,sql,get uploads(){return uploads;}};
 }
 const product={name:'Camiseta de teste',description:'Algodão',category:'Camisetas',price:64.9,stock:0,active:false,images:[],sizes:['p','M','p'],comparePrice:79.9,installmentCount:12,installmentValue:6.68};
@@ -80,4 +80,12 @@ test('importação autenticada mantém IDs, estoque e produtos já editados onli
  assert.equal((await f.request('import-product',{method:'POST',data})).response.status,401);
  await f.login();const first=await f.request('import-product',{method:'POST',data});assert.equal(first.response.status,200);assert.equal(first.value.id,data.id);assert.equal(first.value.stock,0);assert.equal(first.value.active,false);
  const second=await f.request('import-product',{method:'POST',data:{...data,name:'Não sobrescrever'}});assert.equal(second.value.name,data.name);assert.equal((await f.request('products')).value.length,1);
+});
+test('link privado entra sem senha e mantém autenticação, CSRF e logout',async t=>{
+ const f=await fixture(t),token='a'.repeat(64);process.env.ADMIN_ACCESS_TOKEN_HASH=createHash('sha256').update(token).digest('hex');t.after(()=>delete process.env.ADMIN_ACCESS_TOKEN_HASH);
+ assert.equal((await f.request('access',{method:'POST',data:{token:'b'.repeat(64)}})).response.status,401);
+ const result=await f.login(token);assert.match(result.response.headers.get('set-cookie'),/Max-Age=2592000/);
+ assert.equal((await f.request('categories')).response.status,200);
+ assert.equal((await f.request('categories',{method:'POST',data:{name:'Teste'},headers:{'X-CSRF-Token':'bad'}})).response.status,403);
+ await f.request('logout',{method:'POST',data:{}});assert.equal((await f.request('categories')).response.status,401);
 });

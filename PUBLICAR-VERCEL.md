@@ -2,6 +2,12 @@
 
 O projeto agora inclui backend Node.js em `api/store.mjs`, banco remoto Turso (libSQL) e imagens em Vercel Blob. O backend PHP continua disponível para uso local. O endereço antigo `/api/index.php` é encaminhado para a função Node na Vercel, preservando a integração das páginas existentes.
 
+## Acesso direto sem digitar senha
+
+Abra o arquivo privado `.runtime/acesso-direto-admin.html` e use **ENTRAR NO ADMIN ONLINE**. O link autentica o navegador e mantém a sessão por até 30 dias. Ele contém uma chave privada no fragmento da URL; a página remove esse fragmento antes de abrir o painel. O servidor recebe a chave por POST e armazena apenas seu hash em `ADMIN_ACCESS_TOKEN_HASH`. Nunca publique o link ou os arquivos de `.runtime`.
+
+Para gerar um novo acesso, use `node scripts/create-admin-access.mjs` em uma instalação sem o arquivo privado anterior. Configure o hash gerado em `ADMIN_ACCESS_TOKEN_HASH` na produção e republique. O formulário de senha permanece recolhido em “Outras formas de acesso”, como alternativa para o proprietário. Sair encerra a sessão daquele navegador.
+
 ## Serviços e variáveis necessários
 
 No projeto Vercel conectado a este repositório:

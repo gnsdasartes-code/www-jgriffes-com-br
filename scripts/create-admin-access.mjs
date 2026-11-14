@@ -1,0 +1,10 @@
+import { randomBytes,createHash } from 'node:crypto';
+import { mkdir,writeFile } from 'node:fs/promises';
+await mkdir('.runtime',{recursive:true});
+const token=randomBytes(32).toString('hex'),hash=createHash('sha256').update(token).digest('hex');
+const online=`https://www-jgriffes-com-br-f3bb.vercel.app/admin/#access=${token}`;
+const local=`http://127.0.0.1:8080/admin/#access=${token}`;
+await writeFile('.runtime/admin-access.json',JSON.stringify({token,hash,online,local},null,2),{flag:'wx',mode:0o600});
+await writeFile('.runtime/acesso-direto-admin.html',`<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>Acesso privado · J Griffes</title><style>body{background:#090909;color:#fff;font:16px Arial,sans-serif;max-width:500px;margin:12vh auto;padding:30px}a{display:block;background:#e53935;color:white;padding:18px;text-align:center;text-decoration:none;border-radius:6px;margin:22px 0}p{color:#bbb;line-height:1.6}.local{background:#242424}</style><h1>J Griffes · Seu painel</h1><p>Entre e edite seus produtos sem digitar senha.</p><a href="${online}" target="_blank" rel="noopener noreferrer">ENTRAR NO ADMIN ONLINE</a><a class="local" href="${local}" target="_blank" rel="noopener noreferrer">Abrir admin local</a><p>Este arquivo dá acesso à administração da loja. Mantenha-o privado.</p></html>`,{mode:0o600});
+await writeFile('.runtime/acesso-admin.txt',`Acesso direto ao admin online, sem digitar senha:\n${online}\n\nAcesso local:\n${local}\n\nOu abra acesso-direto-admin.html nesta pasta.\nArquivo privado: não compartilhe estes links.\n`,{mode:0o600});
+console.log('Acesso direto criado em .runtime/acesso-direto-admin.html. O link não foi exibido no terminal.');
